@@ -1713,6 +1713,7 @@ struct MetaChunkReplicate: public MetaChunkRequest {
     MetaChunkVersChange*                versChange;
     FileRecoveryInFlightCount::iterator recovIt;
     string                              metaServerAccess;
+    int64_t requestTime;
     MetaChunkReplicate(seq_t n, const ChunkServerPtr& s,
             fid_t f, chunkId_t c, const ServerLocation& loc,
             const ChunkServerPtr& src, kfsSTier_t minTier, kfsSTier_t maxTier,
@@ -1740,7 +1741,8 @@ struct MetaChunkReplicate: public MetaChunkRequest {
           key(),
           versChange(0),
           recovIt(it),
-          metaServerAccess()
+          metaServerAccess(),
+          requestTime(0)
         {}
     virtual ~MetaChunkReplicate() { assert(! versChange); }
     virtual void handle();
