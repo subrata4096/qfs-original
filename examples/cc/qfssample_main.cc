@@ -60,6 +60,35 @@ using std::vector;
 
 KFS::KfsClient *gKfsClient;
 
+//subrata start
+
+void printLocationOfTheChunksForAFile(string& fileName, long numBytes)
+{
+  cout << "File name = " << fileName << endl;
+  
+     vector< vector <string> > retVec;
+    int retVal = gKfsClient->GetDataLocation(fileName.c_str(),0,numBytes,retVec);
+    vector< vector <string> > :: iterator iiv, jjv;
+    iiv = retVec.begin();
+    jjv = retVec.end();
+    for(; iiv!= jjv; iiv++)
+    {
+        vector <string> theVec  = *iiv;
+        vector <string> :: iterator begI, endI;
+        begI = theVec.begin();
+        endI = theVec.end();
+        for(;begI != endI; begI++)
+        {
+           string theString = *begI;
+           cout << "Loc : " << theString << endl;
+        }
+    }
+   // subrata end
+
+}
+
+//subrata end
+
 // generate sample data for testing
 void generateData(char *buf, int numBytes);
 
@@ -127,10 +156,15 @@ main(int argc, char **argv)
     // fd is our file-handle to the file we are creating; this
     // file handle should be used in subsequent I/O calls on
     // the file.
-    if ((fd = gKfsClient->Create(tempFilename.c_str())) < 0) {
+    //subrata start
+    //if ((fd = gKfsClient->Create(tempFilename.c_str())) < 0) {
+    //Please refer to line 308 of src/cc/libclient/KfsClient.h
+    //if ((fd = gKfsClient->Create(tempFilename.c_str(),1,false,6,3,64<<10,2)) < 0) {
+    if ((fd = gKfsClient->Create(tempFilename.c_str(),1,false,6,3,64<<10,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
         cout << "Create failed: " << KFS::ErrorCodeToStr(fd) << endl;
         exit(-1);
     }
+    //subrata end
 
     // Get the directory listings
     vector<string> entries;
@@ -146,7 +180,10 @@ main(int argc, char **argv)
     }
 
     // write something to the file
-    int numBytes = 2048;
+    //int numBytes = 2048;
+    //int numBytes = 64 << 20;
+    int numBytes = 384 << 20; //will create one stripe  384 = 64 x 6  (each chunk is 64 MB)
+    //int numBytes = 768 << 20;  //will create 2 stripes for the whole file
     char *dataBuf = new char[numBytes];
 
     generateData(dataBuf, numBytes);
@@ -166,7 +203,11 @@ main(int argc, char **argv)
 
     // Close the file-handle
     gKfsClient->Close(fd);
+    cout << "Now waiting. Do the experiment.." << endl;
+    getchar();
+    getchar();
 
+    /*
     // Determine the file-size
     KFS::KfsFileAttr fileAttr;
     gKfsClient->Stat(tempFilename.c_str(), fileAttr);
@@ -175,6 +216,13 @@ main(int argc, char **argv)
     if (size != numBytes) {
         cout << "KFS thinks the file's size is: " << size << " instead of " << numBytes << endl;
     }
+   //subrata start
+
+    int numChunks = gKfsClient->GetNumChunks(tempFilename.c_str());
+    int replicationFactor = gKfsClient->GetReplicationFactor(tempFilename.c_str());
+    cout << "Number of chunks are = " << numChunks << ", " << "Replication facto = " << replicationFactor << endl;
+    printLocationOfTheChunksForAFile(tempFilename, numBytes);
+   // subrata end
 
     // rename the file
     string newFilename = baseDir + "/foo.2";
@@ -194,6 +242,9 @@ main(int argc, char **argv)
     }
 
     gKfsClient->Close(fd1);
+    
+    getchar();
+
 
     // try to rename and don't allow overwrite
     if (gKfsClient->Rename(newFilename.c_str(), tempFilename.c_str(), false) == 0) {
@@ -218,6 +269,11 @@ main(int argc, char **argv)
             exit(-1);
         }
     }
+
+   //subrata start
+    //check if crash of chunkserver and subsequent repair actually moved the data?
+    printLocationOfTheChunksForAFile(newFilename, numBytes);
+   // subrata end
 
     // Verify what we read matches what we wrote
     for (int i = 0; i < 128; i++) {
@@ -247,6 +303,7 @@ main(int argc, char **argv)
     } else {
         cout << "Tests passed!" << endl;
     }
+  */
 }
 
 void generateData(char *buf, int numBytes)
