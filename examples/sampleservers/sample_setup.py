@@ -516,6 +516,8 @@ def setup_config_files(config, authFlag):
     print >> metaFile, 'metaServer.clusterKey = %s' % clusterKey
     print >> metaFile, 'metaServer.cpDir = %s/checkpoints' % metaRunDir
     print >> metaFile, 'metaServer.logDir = %s/logs' % metaRunDir
+    print >> metaFile, 'metaServer.fileSystemIdRequired = 0'
+    print >> metaFile, 'metaServer.deleteChunkOnFsIdMismatch = 1'
     print >> metaFile, 'metaServer.recoveryInterval = 1'
     #subrata: add start
     print >> metaFile, 'metaServer.serverDownReplicationDelay = 15'
@@ -635,6 +637,7 @@ def start_servers(config, whichServers, createNewFsFlag, authFlag):
                                 shell_quote(Globals.METASERVER),
                                 shell_quote(metaConf),
                                 shell_quote(metaOut))
+                print "command is: ", command
                 if run_command(command) > 0:
                     print '*** metaserver failed create empty file system'
                     errors = errors + 1
