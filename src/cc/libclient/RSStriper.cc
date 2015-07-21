@@ -32,6 +32,7 @@
 
 #include "common/MsgLogger.h"
 #include "common/StBuffer.h"
+#include "common/time.h"
 
 #include "qcdio/qcdebug.h"
 #include "qcdio/QCDLList.h"
@@ -3227,6 +3228,9 @@ private:
         int        theBufToCopyCount = mStripeCount;
         int        theEndPosHead     = -1;
         theMissingIdx[mRecoveryStripeCount] = -1; // Jerasure end of list.
+        
+        int64_t totalDecodingTime = 0; //subrata : added for timing total time it took to do the decoding...
+
         for (int thePos = 0; thePos < theSize; ) {
             int theLen = theSize - thePos;
             if (theLen > kAlign) {
@@ -3412,6 +3416,11 @@ private:
                     " of: "   << theSize                <<
                 KFS_LOG_EOM;
             }
+ 
+ 
+            //subrata measure the time it takes to do decoding
+            int64_t tStart = microseconds();
+
             const int theRet = mDecoderPtr->Decode(
                 mStripeCount,
                 mRecoveryStripeCount,
@@ -3419,6 +3428,9 @@ private:
                 mBufPtr,
                 theMissingIdx
             );
+
+            totalDecodingTime += (microseconds() - tStart);
+
             if (theRet != 0) {
                 KFS_LOG_STREAM_ERROR << mLogPrefix       <<
                     "read reocvery decode failure"
@@ -3454,6 +3466,10 @@ private:
             thePos += theLen;
             thePrevLen = theLen;
         }
+  
+        
+        KFS_LOG_STREAM_DEBUG << "subrata :  Partial decoding time on This node = " << totalDecodingTime << KFS_LOG_EOM;
+
         mRecoveryInfo.Set(*this, inRequest);
         for (int i = 0; i < mStripeCount; i++) {
             mBufIteratorsPtr[i].SetRecoveryResult(inRequest.GetBuffer(i));

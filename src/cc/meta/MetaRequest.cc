@@ -5129,6 +5129,7 @@ MetaChunkReplicate::request(ostream& os)
     os.write(req.data(), req.size());
 
    requestTime = microseconds(); //current time in microsec . record this. we need to measure how long does the repair take
+   KFS_LOG_STREAM_DEBUG << "subrata: metaserver is sending REPAIR instruiction to chunkserver at time = " << requestTime << KFS_LOG_EOM;  
 }
 
 void
@@ -5150,7 +5151,8 @@ MetaChunkReplicate::handleReply(const Properties& prop)
     //lets check how long did it take to complete the repair process..
     int64_t repairDuration = now - this->requestTime;
 
-    KFS_LOG_STREAM_DEBUG << "subrata: MetaChunkReplicate::handleReply for fid= " << fid << " REPAIR took time = " << repairDuration << KFS_LOG_EOM;
+    //KFS_LOG_STREAM_DEBUG << "subrata: MetaChunkReplicate::handleReply for fid= " << fid << " REPAIR took time = " << repairDuration << KFS_LOG_EOM;
+    KFS_LOG_STREAM_DEBUG << "subrata: MetaChunkReplicate::handleReply for fid= " << fid << " REPAIR took time = " << repairDuration << " request time = " << this->requestTime << " reply time = " << now << KFS_LOG_EOM;
  
     invalidStripes.clear();
     const int sc = numStripes + numRecoveryStripes;
