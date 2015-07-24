@@ -2785,7 +2785,8 @@ GetChunkMetadataOp::HandleChunkMetaReadDone(int code, void *data)
     readOp.chunkId = chunkId;
     readOp.chunkVersion = chunkVersion;
     readOp.offset = 0;
-    readOp.numBytes = min((int64_t) 1 << 20, chunkSize);
+    //readOp.numBytes = min((int64_t) 1 << 20, chunkSize);
+    readOp.numBytes = min((int64_t)CHUNK_READ_SIZE, chunkSize); //subrata modify
 
     readOp.SetScrubOp(this);
     SET_HANDLER(this, &GetChunkMetadataOp::HandleScrubReadDone);

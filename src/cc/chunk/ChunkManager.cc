@@ -1602,7 +1602,8 @@ ChunkManager::ChunkManager()
       mWriteId(GetRandomSeq()), // Seed write id.
       mPendingWrites(),
       mChunkTable(),
-      mMaxIORequestSize(4 << 20),
+      //mMaxIORequestSize(4 << 20),
+      mMaxIORequestSize(CHUNK_READ_SIZE), //subrata
       mNextChunkDirsCheckTime(globalNetManager().Now() - 360000),
       mChunkDirsCheckIntervalSecs(120),
       mNextGetFsSpaceAvailableTime(globalNetManager().Now() - 360000),
@@ -1625,7 +1626,8 @@ ChunkManager::ChunkManager()
       mChunkPlacementPendingReadWeight(0),
       mChunkPlacementPendingWriteWeight(0),
       mMaxPlacementSpaceRatio(0.2),
-      mMinPendingIoThreshold(8 << 20),
+      //mMinPendingIoThreshold(8 << 20),
+      mMinPendingIoThreshold(CHUNK_READ_SIZE), //subrata
       mPlacementMaxWaitingAvgUsecsThreshold(5 * 60 * 1000 * 1000),
       mAllowSparseChunksFlag(true),
       mBufferedIoFlag(false),

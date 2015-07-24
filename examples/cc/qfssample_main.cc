@@ -160,7 +160,7 @@ main(int argc, char **argv)
     //if ((fd = gKfsClient->Create(tempFilename.c_str())) < 0) {
     //Please refer to line 308 of src/cc/libclient/KfsClient.h
     //if ((fd = gKfsClient->Create(tempFilename.c_str(),1,false,6,3,64<<10,2)) < 0) {
-    if ((fd = gKfsClient->Create(tempFilename.c_str(),1,false,6,3,64<<10,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
+    if ((fd = gKfsClient->Create(tempFilename.c_str(),1,false,6,3,64<<20,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
         cout << "Create failed: " << KFS::ErrorCodeToStr(fd) << endl;
         exit(-1);
     }
@@ -203,6 +203,23 @@ main(int argc, char **argv)
 
     // Close the file-handle
     gKfsClient->Close(fd);
+
+    // Re-open the file
+    if ((fd = gKfsClient->Open(tempFilename.c_str(), O_RDWR)) < 0) {
+        cout << "Open on : " << tempFilename << " failed: " << KFS::ErrorCodeToStr(fd) << endl;
+        exit(-1);
+    }
+
+    // read some bytes
+    res = gKfsClient->Read(fd, copyBuf, numBytes);
+    if (res != numBytes) {
+        if (res < 0) {
+            cout << "Read on : " << tempFilename << " failed: " << KFS::ErrorCodeToStr(res) << endl;
+            exit(-1);
+        }
+    }
+
+ 
     printLocationOfTheChunksForAFile(tempFilename, numBytes);
     cout << "Now waiting. Do the experiment.." << endl;
     getchar();

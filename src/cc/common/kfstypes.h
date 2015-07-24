@@ -70,7 +70,11 @@ const kfsSTier_t kKfsSTierMax   = 15;
 const kfsSTier_t kKfsSTierUndef = 127;
 const size_t     kKfsSTierCount = size_t(kKfsSTierMax) + 1;
 
+//extern size_t CHUNKSIZE = 64u << 20; //!< (64MB)
 const size_t CHUNKSIZE = 64u << 20; //!< (64MB)
+//extern size_t CHUNK_READ_SIZE = CHUNKSIZE; //!< (64MB), making it equal to CHUNKSIZE //subrata : previously it was 1MB
+const size_t CHUNK_READ_SIZE = 64u << 20; //!< (64MB), making it equal to CHUNKSIZE //subrata : previously it was 1MB
+
 const int MAX_RPC_HEADER_LEN = 16 << 10; //!< Max length of header in RPC req/response
 const size_t MAX_FILE_NAME_LENGTH = 4 << 10;
 const size_t MAX_PATH_NAME_LENGTH = MAX_FILE_NAME_LENGTH * 3;
@@ -144,7 +148,8 @@ static inline bool ValidateStripeParameters(
         KFS_STRIPED_FILE_TYPE_UNKNOWN < inStipedFileType &&
             inStipedFileType < KFS_STRIPED_FILE_TYPE_COUNT &&
         KFS_MIN_STRIPE_SIZE <= inStripeSize &&
-            inStripeSize < KFS_MAX_STRIPE_SIZE &&
+            //inStripeSize < KFS_MAX_STRIPE_SIZE &&
+            inStripeSize <= KFS_MAX_STRIPE_SIZE &&  //subrata . this is to make stripe_size = chunk_size, i.e. 64MB
         0 < inStripeCount &&
         inStripeSize % KFS_STRIPE_ALIGNMENT == 0 &&
         (int64_t)CHUNKSIZE % inStripeSize == 0 &&
@@ -162,6 +167,7 @@ enum AuthenticationType
 };
 const int kMaxAuthenticationContentLength = 64 << 10;
 
+const int CHUNK_LRU_CACHE_SIZE = 10;
 }
 
 #endif // COMMON_KFSTYPES_H
