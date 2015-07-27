@@ -168,8 +168,6 @@ int jerasure_matrix_decode(int k, int m, int w, int *matrix, int row_k_ones, int
                           char **data_ptrs, char **coding_ptrs, int size)
 {
 
-  return 0;  //subrata commenting it out as we want to measure just the overhead of network transfer
-
   int i, edd, lastdrive;
   int *tmpids;
   int *erased, *decoding_matrix, *dm_ids;
