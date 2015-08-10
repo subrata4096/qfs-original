@@ -193,7 +193,8 @@ int ChunkServer::sChunkAllocTimeout    = 40;
 int ChunkServer::sChunkReallocTimeout  = 75;
 int ChunkServer::sMakeStableTimeout    = 330;
 int ChunkServer::sReplicationTimeout   = 510;
-int ChunkServer::sRequestTimeout       = 600;
+//int ChunkServer::sRequestTimeout       = 600;
+int ChunkServer::sRequestTimeout       = 3600; //subrata testing, was it causing close connection during repair. In THIS branch, making it same as smart repair...
 int ChunkServer::sMetaClientPort       = 0;
 size_t ChunkServer::sMaxChunksToEvacuate  = 2 << 10; // Max queue size
 // sHeartbeatInterval * sSrvLoadSamplerSampleCount -- boxcar FIR filter
