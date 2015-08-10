@@ -73,8 +73,9 @@ public:
             {}
     };
     typedef NetConnection::NetManagerEntry NetManagerEntry;
-
-    NetManager(int timeoutMs = 1000);
+    
+    //NetManager(int timeoutMs = 1000); //subrata : changing temporarily
+    NetManager(int timeoutMs = 10000);
     ~NetManager();
     /// Add a connection to the net manager's list of connections that
     /// are used for building poll vector.
