@@ -3828,6 +3828,8 @@ ChunkManager::ReadChunkDone(ReadOp* op)
 
     op->diskIOTime = max(int64_t(1), microseconds() - op->diskIOTime);
     const int readLen = op->dataBuf.BytesConsumable();
+
+    KFS_LOG_STREAM_ERROR << "subrata : Disk IO time = " << op->diskIOTime << " for read size = " << readLen << KFS_LOG_EOM;
     if (readLen <= 0) {
         KFS_LOG_STREAM_ERROR << "Short read for" <<
             " chunk: "  << cih->chunkInfo.chunkId  <<
