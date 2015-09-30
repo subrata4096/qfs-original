@@ -3802,6 +3802,7 @@ ChunkManager::WriteDone(WriteOp* op)
         return;
     }
     op->diskIOTime = max(int64_t(1), microseconds() - op->diskIOTime);
+    KFS_LOG_STREAM_ERROR << "subrata : Disk IO WRITE time = " << op->diskIOTime << KFS_LOG_EOM;
     cih->WriteDone(op);
 }
 
